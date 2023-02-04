@@ -245,7 +245,13 @@ public class ValidationItemControllerV2 {
      *
      * 가장 좋은 방법
      * ✅ 범용성으로 사용하다가, 세밀하게 작성해야 하는 경우에는 세밀한 내용이 적용되도록 메시지에 단계를 두는 방법
-     */
+     *
+     * 정리!!
+     * 1. rejectValue(호출)
+     * 2. MessageCodesResolver를 사용해서 검증 오류 코드로 메시지 코드들을 생성
+     * 3. new FieldError()를 생성하면서 메시지 코드들을 보관
+     * 4. th:errors 에서 메시지 코드들로 메시지를 순서대로 메시지에서 찾고 => 출력
+     * */
     @PostMapping("/add")
     public String addItemV5(@ModelAttribute Item item,
                             BindingResult bindingResult,
