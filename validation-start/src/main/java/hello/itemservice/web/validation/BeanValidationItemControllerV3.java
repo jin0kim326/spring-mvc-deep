@@ -64,6 +64,12 @@ public class BeanValidationItemControllerV3 {
      *   -> 실패하면 typeMismatch로 FieldError 추가
      * 2. Validator 적용
      * => 바인딩에 성공한 필드만 Bean Validation 적용 (타입이 안맞는데, 검증은 의미가 없음!!)
+     * --------
+     *
+     * BeanValidation 메시지 찾는 순서
+     * 1. 생성된 메시지 코드 순서대로 messageSource 에서 찾기
+     * 2. 애노테이션의 message 속성 사용 -> @NotBlank(message = "공백! {0}")
+     * 3. 라이브러리가 제공하는 기본 값 사용 -> 공백일 수 없습니다.
      */
     @PostMapping("/add")
     public String addItem(@Validated @ModelAttribute Item item,
