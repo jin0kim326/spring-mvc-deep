@@ -143,9 +143,10 @@ public class ValidationItemControllerV2 {
     }
 
     /**
-     * ⭐️
+     * ⭐️ V3. 에러메시지 코드화
+     *
      */
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV3(@ModelAttribute Item item,
                             BindingResult bindingResult,
                             RedirectAttributes redirectAttributes,
@@ -183,6 +184,59 @@ public class ValidationItemControllerV2 {
         redirectAttributes.addAttribute("status", true);
         return "redirect:/validation/v2/items/{itemId}";
     }
+
+    /**
+     * ⭐️V4.
+     *
+     * 컨트롤러에서 BindingResult는 검증해야할 객체 바로 뒤에 온다, 즉 검증해야할 객체가 무엇인지 알고있다.
+     *
+     * bindingResult.rejectValue(...)
+     * =>내부동작으로 V3의 fieldError를 만들어준다.
+     * 2번째 파라미터인 errorCode는 메시지에 등록된 코드가 아님!!
+     *  range.item.price => range로 적었는데 어떻게 동작하나??? => MessageCodeResolver를 알아야함
+     */
+    @PostMapping("/add")
+    public String addItemV4(@ModelAttribute Item item,
+                            BindingResult bindingResult,
+                            RedirectAttributes redirectAttributes,
+                            Model model) {
+
+        log.info("objectName ={}", bindingResult.getObjectName());
+        log.info("target={}", bindingResult.getTarget());
+        //검증 오류 결과를 보관
+        Map<String, String> errors = new HashMap<>();
+        //검증 로직
+        if (!StringUtils.hasText(item.getItemName())) {
+            bindingResult.rejectValue("itemName", "required");
+        }
+
+        if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
+            bindingResult.rejectValue("price", "range", new Object[]{1000, 1000000},null);
+        }
+
+        if (item.getQuantity() == null || item.getQuantity() >= 9999) {
+            bindingResult.rejectValue("quantity", "max", new Object[]{9999}, null);
+        }
+
+        //특정 필드가 아닌 복합 룰 검증
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if (resultPrice < 10000) {
+                bindingResult.reject("totalPriceMin", new Object[]{10000, resultPrice}, null);
+            }
+        }
+        //검증에 실패하면 다시 입력 폼으로
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
+            return "validation/v2/addForm";
+        }
+
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v2/items/{itemId}";
+    }
+
 
 
     @GetMapping("/{itemId}/edit")
