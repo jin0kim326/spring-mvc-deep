@@ -19,15 +19,15 @@ import javax.validation.constraints.NotNull;
 public class Item {
 
     private Long id;
-    @NotBlank   // 빈값 + 공백 허용X
+    @NotBlank   // 빈값 + 공백 허용X .
     private String itemName;
 
-    @NotNull    // null 허용 X
+    @NotNull    // null 허용 X .
     @Range(min = 1000, max=1000000)
     private Integer price;
 
-    @NotNull
-    @Max(9999)
+    @NotNull    //.
+    @Max(9999)  //.
     private Integer quantity;
 
     public Item() {

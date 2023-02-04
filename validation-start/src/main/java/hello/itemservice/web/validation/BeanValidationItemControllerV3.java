@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -20,9 +21,9 @@ import java.util.Map;
 
 @Slf4j
 @Controller
-//@RequestMapping("/validation/v3/items")
+@RequestMapping("/validation/v3/items")
 @RequiredArgsConstructor
-public class ValidationItemControllerV3 {
+public class BeanValidationItemControllerV3 {
 
     private final ItemRepository itemRepository;
 
@@ -63,14 +64,12 @@ public class ValidationItemControllerV3 {
      *   -> 실패하면 typeMismatch로 FieldError 추가
      * 2. Validator 적용
      * => 바인딩에 성공한 필드만 Bean Validation 적용 (타입이 안맞는데, 검증은 의미가 없음!!)
-     *
-    */
+     */
     @PostMapping("/add")
-    public String addItemBeanValidate(@Validated @ModelAttribute Item item,
-                          BindingResult bindingResult,
-                          RedirectAttributes redirectAttributes
-                          ) {
-
+    public String addItem(@Validated @ModelAttribute Item item,
+                            BindingResult bindingResult,
+                            RedirectAttributes redirectAttributes,
+                            Model model) {
         //검증에 실패하면 다시 입력 폼으로
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
