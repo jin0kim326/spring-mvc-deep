@@ -195,7 +195,7 @@ public class ValidationItemControllerV2 {
      * 2번째 파라미터인 errorCode는 메시지에 등록된 코드가 아님!!
      *  range.item.price => range로 적었는데 어떻게 동작하나??? => MessageCodeResolver를 알아야함
      */
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV4(@ModelAttribute Item item,
                             BindingResult bindingResult,
                             RedirectAttributes redirectAttributes,
@@ -237,7 +237,56 @@ public class ValidationItemControllerV2 {
         return "redirect:/validation/v2/items/{itemId}";
     }
 
+    /**
+     * ⭐️ V5.
+     * 메시지코드(errors.properties)에 오류코드를 만들때 자세히만들수도있고,단순하게 만들수도 있음.
+     * 자세히만든것 required.item.itemName : 아이템에서만 사용가능
+     * 단순버전 required : 어디서든 사용가능 (범용성👍)
+     *
+     * 가장 좋은 방법
+     * ✅ 범용성으로 사용하다가, 세밀하게 작성해야 하는 경우에는 세밀한 내용이 적용되도록 메시지에 단계를 두는 방법
+     */
+    @PostMapping("/add")
+    public String addItemV5(@ModelAttribute Item item,
+                            BindingResult bindingResult,
+                            RedirectAttributes redirectAttributes,
+                            Model model) {
 
+        log.info("objectName ={}", bindingResult.getObjectName());
+        log.info("target={}", bindingResult.getTarget());
+        //검증 오류 결과를 보관
+        Map<String, String> errors = new HashMap<>();
+        //검증 로직
+        if (!StringUtils.hasText(item.getItemName())) {
+            bindingResult.rejectValue("itemName", "required");
+        }
+
+        if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
+            bindingResult.rejectValue("price", "range", new Object[]{1000, 1000000},null);
+        }
+
+        if (item.getQuantity() == null || item.getQuantity() >= 9999) {
+            bindingResult.rejectValue("quantity", "max", new Object[]{9999}, null);
+        }
+
+        //특정 필드가 아닌 복합 룰 검증
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if (resultPrice < 10000) {
+                bindingResult.reject("totalPriceMin", new Object[]{10000, resultPrice}, null);
+            }
+        }
+        //검증에 실패하면 다시 입력 폼으로
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
+            return "validation/v2/addForm";
+        }
+
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v2/items/{itemId}";
+    }
 
     @GetMapping("/{itemId}/edit")
     public String editForm(@PathVariable Long itemId, Model model) {
