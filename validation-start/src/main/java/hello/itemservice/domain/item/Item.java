@@ -21,17 +21,17 @@ import javax.validation.constraints.NotNull;
 @Data
 //@ScriptAssert(lang = "javascript", script = "_this.price * _this.quantity >= 10000", message = "총합이 10,000원 이상이 되어야합니다.")
 public class Item {
-
+    @NotNull(groups = UpdateCheck.class)
     private Long id;
-    @NotBlank   // 빈값 + 공백 허용X .
+    @NotBlank(groups = {SaveCheck.class, UpdateCheck.class})   // 빈값 + 공백 허용X .
     private String itemName;
 
-    @NotNull    // null 허용 X .
-    @Range(min = 1000, max=1000000)
+    @NotNull(groups = {SaveCheck.class, UpdateCheck.class})    // null 허용 X .
+    @Range(min = 1000, max=1000000,groups = {SaveCheck.class, UpdateCheck.class})
     private Integer price;
 
-    @NotNull    //.
-    @Max(9999)  //.
+    @NotNull(groups = {SaveCheck.class, UpdateCheck.class})    //.
+    @Max(value = 9999, groups = {SaveCheck.class})  //.
     private Integer quantity;
 
     public Item() {
