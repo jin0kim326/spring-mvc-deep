@@ -15,6 +15,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+/**
+ * 세션을 적용했지만 url에 직접 아이템컨트롤러를 접근하면 누구나 접근이 가능하다.
+ * => 모든 컨트롤러에 로그인(세션) 체크 로직 추가가 필요하다.
+ * AOP로도 가능하지만 서블릿 필터 or 스프링 인터셉터를 사용하는것이 더 좋다.
+ *
+ * 🔥 서블릿 필터
+ * - 필터는 서블릿이 지원하는 "수문장" : HTTP 요청 -> WAS -> FILTER -> SERVLET -> Controller
+ * - 필터 제한 가능 : 적절하지 않은 요청은 걸러냄, 로그인 체크에 적합
+ * - 필터 체인 : 중간에 필터를 자유롭게 추가 가능 ex) 로그출력 후 세션체크
+ *
+ */
 @Slf4j
 @Controller
 @RequestMapping("/items")
