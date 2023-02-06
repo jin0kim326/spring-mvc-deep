@@ -2,6 +2,7 @@ package hello.login.web.login;
 
 import hello.login.domain.login.LoginService;
 import hello.login.domain.member.Member;
+import hello.login.web.SessionConst;
 import hello.login.web.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 /**
  * Vesion
  * V1 : 단순 쿠키 사용
  * V2 : 서버(세션 저장소) 사용
+ * V3 : 서블릿 세션 사용
  *
  * 현재 쿠키의 문제점
  * 1. 쿠키값을 변조가능 : memberId:1 , memberId:2 => 해커가 특정멤버로 로그인하기 너무 쉬운구조
@@ -67,7 +70,7 @@ public class LoginController {
         return "redirect:/";
     }
 
-    @PostMapping("/login")
+//    @PostMapping("/login")
     public String loginV2(@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
                         HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
@@ -86,15 +89,49 @@ public class LoginController {
         return "redirect:/";
     }
 
-//    @PostMapping("/logout")
+    @PostMapping("/login")
+    public String loginV3(@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
+                          HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            return "login/loginForm";
+        }
+        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
+
+        if(loginMember ==null) {
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+            return "login/loginForm";
+        }
+
+        //로그인 성공 처리
+        //세션이 있으면 있는 세션 반환, 없으면 신규 세션을 생성
+        //create(파라미터) 값
+        // true(default) : 세션있으면 기존세션 반환, 없으면 새로운 세션을 생성해서 반환
+        // false :         세션있으면 기존세션 반환, 없으면 새로운 세션을 생성X -> null 반환
+        HttpSession session = request.getSession();
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);   //세션에 로그인 회원 정보 보관
+
+        return "redirect:/";
+    }
+
+
+    //    @PostMapping("/logout")
     public String logout(HttpServletResponse response) {
         expireCookie(response, "memberId");
         return "redirect:/";
     }
 
-    @PostMapping("/logout")
+//    @PostMapping("/logout")
     public String logoutV2(HttpServletRequest request) {
         sessionManager.expire(request);
+        return "redirect:/";
+    }
+
+    @PostMapping("/logout")
+    public String logoutV3(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
         return "redirect:/";
     }
 
