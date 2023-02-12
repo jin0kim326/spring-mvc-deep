@@ -42,3 +42,24 @@ DispatchType
 - FORWARD : 서블릿에서 다른 서블릿/JSP 호출
 - INCLUDE : 서블릿에서 다른 서블릿/JSP의 결과를 포함할 때
 - ASYNC : 서블릿 비동기 호출
+
+---------------------------------------------------------------------
+#4 스프링부트 - 오류 페이지
+
+서블릿의 예외 페이지 만들기
+1. WebServerCustomizer 생성
+2. 예외 종류에 따라 ErrorPage 추가
+3. 예외 처리용 컨트롤러 ErrorPageController 생성
+
+⭐️ 스프링 부트는 위 과정을 모두 기본 제공
+- ErrorPage를 자동 등록 (`/error` 경로가 기본 오류 페이지)
+- BasicErrorController라는 스프링 컨트롤러를 자동으로 등록 (+ErrorMvcAutoConfiguration 클래스가 오류 페이지를 자동으로 등록)
+
+개발자는 오류 페이지 화면만 BasicErrorController가 제공하는 룰과 우선순위에 따라서 등록하면됨
+우선순위
+1. 뷰템플릿
+2. 정적 리소스
+3. 적용 대상이 없을때 뷰 이름(error)
++ 구체적인(400,404...) 것이 덜 구체적인것(4xx) 보다 우선순위 높음
+
+즉 개발자는 error폴더에 각 에러에 맞는 html만 추가해주면 된다..
