@@ -70,3 +70,10 @@ BasicErrorController가 제공하는 기본 정보들
 - 시간,상태코드, 에러, 예외, 메시지 등등..
 단, 오류 관련 내부 정보들을 고객에게 노출하는것은 좋지 않음 -> 고객이 해당 정보를 읽어도 혼란만 더해지고, 보안상 문제 발생
 BasicErrorController
+
+----------------------------------------------------------------------
+
+API 예외 처리 - 스프링 부트 기본 오류 처리
+BasicController가 errorHtml(), error() 두 머세드를 지원
+- errorHtml : 클라이언트 요청이 html인경우 modelAndView 반환
+- error : 그외의 경우 json으로 반환
