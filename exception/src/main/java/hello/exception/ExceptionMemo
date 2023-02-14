@@ -90,3 +90,9 @@ BasicController가 errorHtml(), error() 두 머세드를 지원
 HandlerExceptionResolver
 - 스프링 MVC는 컨트롤러 밖으로 예외가 던져진 경우 예외를 해결하고, 동작을 새로 정의할 수 있는 방법을 제공한다.(리졸버=해결자)
 - 이 리졸버를 사용해서 exception을 처리하고 정상응답으로 나가게 할 수 도 있음!! (이경우에도 인터셉터의 postHandle은 호출되지않음)
+
+----------------------------------------------------------------------
+
+👉🏻 HandlerExceptionResolver 활용
+-> 예외가 발생하면 WAS까지 예외가 던져지고, WAS에서 오류 페이지 정보를 찾아서 다시 /error를 호출하는 과정은 너무 복잡
+-> ExceptionResolver를 활용하면 예외가 발생했을 때 이런 복잡한 과정 없이 문제를 깔끔하게 해결 가능
