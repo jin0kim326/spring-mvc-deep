@@ -96,3 +96,30 @@ HandlerExceptionResolver
 👉🏻 HandlerExceptionResolver 활용
 -> 예외가 발생하면 WAS까지 예외가 던져지고, WAS에서 오류 페이지 정보를 찾아서 다시 /error를 호출하는 과정은 너무 복잡
 -> ExceptionResolver를 활용하면 예외가 발생했을 때 이런 복잡한 과정 없이 문제를 깔끔하게 해결 가능
+
+----------------------------------------------------------------------
+
+👉🏻 스프링이 제공하는 ExceptionResolver
+HandlerExceptionResolverComposite에 다음 순서로 등록 (우선순위 순)
+1. ExceptionHandlerExceptionResolver
+2. ResponseStatusExceptionResolver
+3. DefaultHandlerExceptionResolver
+
+1. ExceptionHandlerExceptionResolver
+=> @ExceptionHandler를 처리함 => API예외 처리는 대부분 이기능으로 처리,
+
+2. ResponseStatusExceptionResolver
+=> Http 상태 코드를 지정해준다. @ResponseStatus(value = HttpStatus.NOT_FOUND)
+
+3. DefaultHandlerExceptionResolver
+=> 스프링 내부 기본 예외를 처리
+
+
+🔥 ResponseStatusExceptionResolver
+=> 예외에 따라서 HTTP상태 코드를 지정해주는 역할을 함
+1. @ResponseStatus가 달려있는 예외
+2. ResponseStatusException 예외
+코드를 확인해보면 결국 response.sendError(status, reason)을 호출 하는것을 확인 할 수 있음
+    => was에서 다시 /error로 내부요청함
+ + 오류이류(reason)을 messageSource에서 찾는 기능도 지원
+
