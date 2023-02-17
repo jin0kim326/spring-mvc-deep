@@ -131,4 +131,30 @@ HTTP 상태 코드를 변경하고, 스프링 내부 예외의 상태코드를 �
 스프링은 @ExceptionHandler를 제공하여 이 문제를 해결함
 
 --------------------------------------------------------------------------
+👉🏻 @ExceptionHandler
 
+- HTML 화면 오류 vs API 오류
+웹 브라우저에 HTML화면을 제공할 때는 오류가 발생하면 BasicError 컨트롤러를 사용하면됨 (5xx, 4xx)
+그러나 API의 예외처리는 같은 예외여도 API마다 다를수 있음
+(회원을 처리하는곳에서 RuntimeException과 상품관리의 RuntimeException을 다르게 처리하고 싶은 경우)
+
+스프링은 API 예외처리 문제를 해결하기 위해 '@ExceptionHandler'라는 애노테이션을 매우 편리한 예외 처리 기능을 제공
+-> ExceptionHandlerExceptionResolver
+-> 기본으로 제공하고, 기본으로 제공하는 ExceptionResolver중에 우선순위도 가장 높음
+-> 실무는 대부분 이 기능을 사용
+
+@ExceptionHandler 예외 처리 방법
+-> 애노테이션 선언후, 해당 컨트롤러에서 처리하고 싶은 예외를 지정해주면 됨
+-> 해당 컨트롤러에서 예외가 발생하면 이 메서드가 호출 (+지정한 예외와 그 자식 예외(클래스)는 모두 처리됨)
+
+참고) 우선순위
+=> 스프링의 우선순위는 항상 자세한 것이 우선권, 예를들어서 부모,자식 모두 클래스가 있다면 자식 예외처리가 호출됨
+=> @ExceptionHandler({AExcetion.class, BException.class}) 처럼 다양한 예외를 한번에 처리 가능
+
+💡실행 흐름
+1. 컨트롤러를 호출한 결과 IllegalArgumentException 예외가 컨트롤러 밖으로 던져짐
+2. 예외가 발생했으므로 ExceptionResolver가 작동 -> 가장 우선순위가 높은 ExceptionHandlerExceptionResolver가 실행
+3. ExceptionHandlerExceptionResolver는 해당 컨트롤러에 IllegalArgumentException을 처리 할 수 있는
+   @ExceptionHandler가 있는지 체크
+4. 있다면 그 메서드를 호출 => @RestController이므로 HTTP컨버터가 사용되고, 응답이 JSON으로 반환
+5.@ResponseStatus를 사용해 응답코드도 지정

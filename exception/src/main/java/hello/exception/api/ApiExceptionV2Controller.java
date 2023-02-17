@@ -1,0 +1,70 @@
+package hello.exception.api;
+
+import hello.exception.exception.UserException;
+import hello.exception.exhadler.ErrorResult;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@Slf4j
+@RestController
+@RequestMapping("/api2")
+public class ApiExceptionV2Controller {
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResult illegalExHandler(IllegalArgumentException e) {
+        log.error("[exceptionHandler] ex", e);
+        return new ErrorResult("BAD !!", e.getMessage());
+    }
+
+    //    @ExceptionHandler(UserException.class) // 생략가능
+    @ExceptionHandler
+    public ResponseEntity<ErrorResult> userExHandler(UserException e) {
+        log.error("[exceptionHandler] ex", e);
+        ErrorResult errorResult = new ErrorResult("USER-EX", e.getMessage());
+        return new ResponseEntity(errorResult,HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Exception이라는것은 "최상위 예외"
+     * 즉, 이 컨트롤러에서 처리하지 못하는 예외를 의미한다.
+     * 이 예제 컨트롤러에서는 RuntimeException을 처리하는 ExceptionHandler가 없기때문에
+     * RuntimeException이 발생하면 이 핸들러가 호출 된다.
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler
+    public ErrorResult exHandler (Exception e) {
+        log.error("[exceptionHandler] ex", e);
+        return new ErrorResult("EX", "내부 오류");
+    }
+
+    @GetMapping("/member/{id}")
+    public ApiExceptionController.MemberDto exceptionTest(
+            @PathVariable("id") String id
+    ) {
+        if (id.equals("ex")) {
+            throw new RuntimeException("예외 발생");
+        }
+
+
+        if (id.equals("bad")) {
+            throw new IllegalArgumentException("잘못된 입력 값");
+        }
+
+        if (id.equals("user-ex")) {
+            throw new UserException("사용자 오류");
+        }
+
+        return new ApiExceptionController.MemberDto("spring", "jinyoung");
+    }
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
+        private String memberId;
+        private String name;
+    }
+}
