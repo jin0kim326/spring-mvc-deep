@@ -99,7 +99,7 @@ HandlerExceptionResolver
 
 ----------------------------------------------------------------------
 
-👉🏻 스프링이 제공하는 ExceptionResolver
+👉🏻 스프링이 제공하는 ExceptionResolver 1
 HandlerExceptionResolverComposite에 다음 순서로 등록 (우선순위 순)
 1. ExceptionHandlerExceptionResolver
 2. ResponseStatusExceptionResolver
@@ -122,4 +122,13 @@ HandlerExceptionResolverComposite에 다음 순서로 등록 (우선순위 순)
 코드를 확인해보면 결국 response.sendError(status, reason)을 호출 하는것을 확인 할 수 있음
     => was에서 다시 /error로 내부요청함
  + 오류이류(reason)을 messageSource에서 찾는 기능도 지원
+
+------------------------------------------------------------------------
+
+👉🏻 스프링이 제공하는 ExceptionResolver 2
+HTTP 상태 코드를 변경하고, 스프링 내부 예외의 상태코드를 변경하는 기능을 공부했다.
+하지만 리졸버를 직접 사용하기는 복잡하고, ModelAndView를 반환하는것은 API 스타일에는 맞지않다.
+스프링은 @ExceptionHandler를 제공하여 이 문제를 해결함
+
+--------------------------------------------------------------------------
 
