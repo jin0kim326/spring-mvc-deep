@@ -158,3 +158,12 @@ HTTP 상태 코드를 변경하고, 스프링 내부 예외의 상태코드를 �
    @ExceptionHandler가 있는지 체크
 4. 있다면 그 메서드를 호출 => @RestController이므로 HTTP컨버터가 사용되고, 응답이 JSON으로 반환
 5.@ResponseStatus를 사용해 응답코드도 지정
+
+----------------------------------------------------------------------
+
+👉🏻 @ControllerAdvice
+-> 대상을 지정하지 않으면 모든 컨트롤러에 적용된다 (글로벌)
+-> 지정방법
+1. @ControllerAdvice(annotations = RestController.class) -> @RestController 어노테이션이달린것
+2. @ControllerAdvice("org.example.controllers") -> 특정 패지키 (그 하위도 모두)
+3. @ControllerAdvice(assignableTypes = {ControllerInterface.class, AbstractController.class} -> 특정 클래스 지정 (자식클래스 포함)
