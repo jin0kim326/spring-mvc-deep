@@ -34,7 +34,7 @@ public class HelloController {
      * 4. 뷰를 랜더링 할때
      *
      * 그 외 새로운 타입을 만들어서 변환하고 싶을때에는 컨버터 인터페이스를 구현해서 등록만 하면됨
-     * 
+     *
      */
     @GetMapping("hello-v2")
     public String helloV2(@RequestParam Integer data) {
