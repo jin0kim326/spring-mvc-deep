@@ -40,6 +40,7 @@ public class HelloController {
     @GetMapping("hello-v2")
     public String helloV2(@RequestParam Integer data) {
         System.out.println("data = " + data);
+        // + 포맷터가 적용되면 "10,000" -> 10000으로 잘 된다
         return "ok";
     }
 
