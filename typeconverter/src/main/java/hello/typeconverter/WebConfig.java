@@ -21,5 +21,9 @@ public class WebConfig implements WebMvcConfigurer {
 
         //추가
         registry.addFormatter(new MyNumberFormatter());
+        /**
+         * 이 포멧터 컨버전서비스는 JSON -> Object / Object -> JSON 변환할때는 적용되지 않음!!!
+         * Jackson 라이브러리가 지원하는 포맷터를 적용해주어야함
+         */
     }
 }
